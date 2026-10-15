@@ -51,6 +51,13 @@ function box(parent, width, height, depth, color, x = 0, y = 0, z = 0, cast = tr
   mesh.scale.set(width, height, depth); mesh.position.set(x, y, z);
   mesh.castShadow = cast; mesh.receiveShadow = true; parent.add(mesh); return mesh;
 }
+function instancedBoxes(parent, specs, color) {
+  if(!specs.length)return;
+  const mesh=new THREE.InstancedMesh(unitBox,mat(color),specs.length);
+  const dummy=new THREE.Object3D();
+  specs.forEach(([w,h,d,x,y,z],i)=>{dummy.position.set(x,y,z);dummy.scale.set(w,h,d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
+  mesh.receiveShadow=true;mesh.instanceMatrix.needsUpdate=true;parent.add(mesh);
+}
 const floor = box(scene, 700, 1, 700, '#cbd7bd', 0, -27, -80, false);
 const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(12, 32, 24), new THREE.MeshBasicMaterial({color:'#f5c88b',fog:false}));
 sunDisc.position.set(-35, 16, -125); scene.add(sunDisc);
@@ -63,12 +70,14 @@ function building(x, z, height, width, depth, color) {
   box(g, width, height, depth, color, 0, height/2, 0);
   box(g, width+.5, .5, depth+.5, '#d1d6b4', 0, height+.1, 0);
   if (height > 14) box(g, width*.6, 1.2, depth*.55, color, 0, height+.9, 0);
+  const darkWindows=[],litWindows=[],sideWindows=[];
   for (let row=2;row<height-2;row+=3.1) {
     for (let col=-width/2+1.1;col<width/2-.5;col+=1.8) {
-      box(g, .65, 1.1, .04, random()>.65?'#e7dba9':'#416e67', col, row, depth/2+.03, false);
+      (random()>.65?litWindows:darkWindows).push([.65,1.1,.04,col,row,depth/2+.03]);
     }
-    for (let col=-depth/2+1;col<depth/2-.5;col+=2) box(g,.04,1.1,.7,'#648d7d',width/2+.03,row,col,false);
+    for (let col=-depth/2+1;col<depth/2-.5;col+=2)sideWindows.push([.04,1.1,.7,width/2+.03,row,col]);
   }
+  instancedBoxes(g,darkWindows,'#416e67');instancedBoxes(g,litWindows,'#e7dba9');instancedBoxes(g,sideWindows,'#648d7d');
   city.push({group:g, initialZ:z, startZ:z}); return g;
 }
 for(let i=0;i<58;i++) {
@@ -126,9 +135,11 @@ function addRoof() {
    for(let x=-5;x<=5;x+=.8)box(g,.35,.028,.35,'#a6ab78',x,.11,edge*(length/2-.7),false);
   }
   // Facade details make the track read as rooftops rather than a floating road.
+  const facadeWindows=[];
   for(let zz=-length/2+2;zz<length/2-1;zz+=3.4){
-   for(let yy=-3;yy>-height+2;yy-=3)box(g,.025,1,1.3,'#66897d',6.0,yy,zz,false);
+   for(let yy=-3;yy>-height+2;yy-=3)facadeWindows.push([.025,1,1.3,6.0,yy,zz]);
   }
+  instancedBoxes(g,facadeWindows,'#66897d');
   if(index%2===0){
    box(g,.75,1.6,.75,'#546f5b',-5.2,.9,length/2-3);const shrub=new THREE.Mesh(shrubGeometry,mat('#638468'));shrub.position.set(-5.2,2,length/2-3);g.add(shrub);
   }
@@ -151,7 +162,7 @@ const coinGeometry=new THREE.OctahedronGeometry(.38,0);
 const coinMat=new THREE.MeshStandardMaterial({color:'#ffd45d',emissive:'#dc831f',emissiveIntensity:.3,metalness:.3,roughness:.35});
 function addCoin(g,roof,x,y,z){const mesh=new THREE.Mesh(coinGeometry,coinMat);mesh.position.set(x,y,z);mesh.castShadow=true;g.add(mesh);const ring=new THREE.Mesh(ringGeometry,mat('#ffe8a1'));ring.rotation.x=Math.PI/2;mesh.add(ring);coins.push({mesh,roof,x,y,z:roof.z+z,collected:false});}
 function resetWorld(){
- for(const s of segments)world.remove(s.group);
+ for(const s of segments){s.group.traverse(o=>{if(o.isInstancedMesh)o.dispose();});world.remove(s.group);}
  for(const p of particles)scene.remove(p.mesh);
  segments.length=obstacles.length=coins.length=particles.length=0;
  nextRoofEdge=20;roofIndex=0;randomState=431+(runSeed++%100)*19;
@@ -247,7 +258,7 @@ function simulate(dt){
   if(c.collected)continue;
   if(Math.abs(c.z+distance)<.9&&Math.abs(c.x-player.position.x)<.9&&Math.abs(c.y-(y+1.15))<1.2){c.collected=true;c.mesh.visible=false;shards++;burst(c.x,c.y,c.z+distance);playSound(780+(shards%5)*100,.12);}
  }
- for(let i=segments.length-1;i>=0;i--){const s=segments[i];if(s.z+distance-s.length/2>32){world.remove(s.group);segments.splice(i,1);for(let j=obstacles.length-1;j>=0;j--)if(obstacles[j].roof===s)obstacles.splice(j,1);for(let j=coins.length-1;j>=0;j--)if(coins[j].roof===s)coins.splice(j,1);}}
+ for(let i=segments.length-1;i>=0;i--){const s=segments[i];if(s.z+distance-s.length/2>32){s.group.traverse(o=>{if(o.isInstancedMesh)o.dispose();});world.remove(s.group);segments.splice(i,1);for(let j=obstacles.length-1;j>=0;j--)if(obstacles[j].roof===s)obstacles.splice(j,1);for(let j=coins.length-1;j>=0;j--)if(coins[j].roof===s)coins.splice(j,1);}}
  while(nextRoofEdge+distance>-230)addRoof();
  for(const c of city){c.group.position.z=c.initialZ+distance*.45;while(c.group.position.z>65){c.initialZ-=245;c.group.position.z-=245;}}
  $('run-tip').textContent=distance<20?'Pick up the sun shards. You’ve got this.':distance<55?'Air vents ahead. Switch lanes or jump.':distance<90?'Rooftop gaps ahead. Jump at the yellow edge.':distance<250?'Find your flow. Keep chasing the sunset.':`${Math.floor(speedAt(distance)*3.6)} km/h · The city’s picking up the pace.`;
