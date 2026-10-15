@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#f5f3e9"/><meta name="description" content="The city is your playground. Jump rooftops, chase sun shards, and find your flow in Skyline Rush, a free 3D browser game."/><link rel="icon" type="image/svg+xml" href="./favicon.svg"/><title>Skyline Rush — Take the high road</title></head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Skyline Rush home"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M3 25 14 6h9l-7 12h17L22 34h-8l6-9z"/></svg><span>skyline<span class="brand-light">rush</span><i>®</i></span></a>
+  <div class="edition"><span class="live-dot"></span> A LITTLE ESCAPE ABOVE THE CITY</div>
+  <nav><button class="text-button" id="how-button">How to play <span>↗</span></button><button id="sound-button" class="icon-button" aria-label="Enable sound" title="Enable sound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path id="sound-wave" d="m16 9 6 6m0-6-6 6"/></svg></button></nav>
+</header>
+<main id="game" data-state="menu">
+  <div id="world" role="img" aria-label="A sunlit three-dimensional rooftop city with a running character"></div>
+  <div class="scene-grain" aria-hidden="true"></div>
+  <div class="scene-top"><span class="pill"><span class="live-dot"></span> GOLDEN HOUR DISTRICT</span><span class="scene-coordinate">06:42 PM &nbsp; / &nbsp; 28° C</span></div>
+  <section class="intro" id="intro">
+    <div class="eyebrow"><span class="short-line"></span> TAKE THE HIGH ROAD</div>
+    <h1>Less street.<br/>More <span>sky.</span><svg class="title-star" viewBox="0 0 48 48" aria-hidden="true"><path d="m24 0 5 17 15-9-9 15 13 4-16 4 8 15-15-10-7 12-1-18L0 28l17-7-9-13 14 8Z"/></svg></h1>
+    <p class="intro-description">The rooftops are yours. Chase the sunset,<br class="desktop-break"/> collect sun shards, and don’t look down.</p>
+    <button class="play-button" id="play-button"><span>Let’s run</span><span class="button-arrow">↗</span></button>
+    <div class="play-note"><span class="tiny-play">▶</span> NO DOWNLOADS. JUST GOOD HEIGHTS.</div>
+    <div class="kit"><span class="small-label">PICK YOUR COLOUR</span><div class="swatches" role="group" aria-label="Runner colour"><button class="swatch selected" data-color="#d5f67b" style="--swatch:#d5f67b" aria-label="Lime runner" aria-pressed="true"></button><button class="swatch" data-color="#ff865f" style="--swatch:#ff865f" aria-label="Coral runner" aria-pressed="false"></button><button class="swatch" data-color="#83cbe9" style="--swatch:#83cbe9" aria-label="Sky blue runner" aria-pressed="false"></button><button class="swatch" data-color="#c2a4e9" style="--swatch:#c2a4e9" aria-label="Lavender runner" aria-pressed="false"></button></div></div>
+    <p class="identity" id="identity"></p>
+  </section>
+  <div class="world-label" id="world-label"><span class="label-cross">+</span><div>YOUR NEXT FAVOURITE<br/><strong>WAY TO GET LOST.</strong></div><span class="label-line"></span></div>
+  <div class="best-card" id="best-card"><span class="best-icon">♜</span><div><span class="small-label">YOUR PERSONAL BEST</span><strong><span id="menu-best">0</span><small>PTS</small></strong></div><span class="best-spark">✧</span></div>
+  <div class="hud" id="hud" hidden><div class="hud-stat"><span class="small-label">SCORE</span><strong id="score">00000</strong></div><div class="hud-divider"></div><div class="hud-stat"><span class="small-label">DISTANCE</span><strong><span id="distance">0</span><small>m</small></strong></div><div class="hud-divider"></div><div class="hud-stat shard-stat"><span class="small-label">SUN SHARDS</span><strong><span class="diamond">◆</span> <span id="shards">0</span></strong></div><button class="icon-button pause-button" id="pause-button" aria-label="Pause game">Ⅱ</button></div>
+  <div class="run-tip" id="run-tip" hidden>Find your flow. Jump the gaps.</div>
+  <div class="touch-controls" id="touch-controls" hidden><button id="left-button" aria-label="Move left">←</button><button id="jump-button" aria-label="Jump">JUMP ↗</button><button id="right-button" aria-label="Move right">→</button></div>
+  <section class="modal-layer" id="result-layer" hidden><div class="result-card"><span class="eyebrow" id="result-eyebrow">A LITTLE BREATHER</span><h2 id="result-title">Run paused.</h2><p id="result-message">The sunset can wait.</p><div class="result-stats" id="result-stats" hidden><div><span class="small-label">YOUR SCORE</span><strong id="final-score">0</strong></div><div><span class="small-label">DISTANCE</span><strong id="final-distance">0m</strong></div><div><span class="small-label">SHARDS</span><strong id="final-shards">0</strong></div></div><button class="play-button" id="resume-button"><span>Keep going</span><span>↗</span></button><button class="text-button back-button" id="home-button">Back to the rooftops</button></div></section>
+  <dialog id="help-dialog"><button class="dialog-close icon-button" id="close-help" aria-label="Close instructions">×</button><span class="eyebrow">A QUICK FIELD GUIDE</span><h2>Find your flow.</h2><p>Run as far as you can. Collect golden sun shards for bonus points. Jump the gaps and air vents, or switch lanes to dodge them.</p><div class="help-row"><span><kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd></span><strong>Switch lanes</strong></div><div class="help-row"><span><kbd>SPACE</kbd> / <kbd>↑</kbd> / <kbd>W</kbd></span><strong>Jump</strong></div><div class="help-row"><span><kbd>P</kbd> / <kbd>ESC</kbd></span><strong>Pause / resume</strong></div><p class="help-mobile">On your phone: swipe left or right to change lanes, swipe up to jump, or use the on-screen buttons.</p><button class="play-button" id="help-done"><span>Got it</span><span>↗</span></button></dialog>
+  <div class="loading" id="loading"><span class="live-dot"></span> BUILDING YOUR LITTLE ESCAPE…</div>
+  <div class="webgl-error" id="webgl-error" hidden><h2>This city needs WebGL.</h2><p>Try a browser with hardware acceleration enabled.</p></div>
+</main>
+<footer class="bottom-bar"><div class="footer-controls"><span><kbd>←</kbd><kbd>→</kbd> MOVE</span><span><kbd class="space-key">SPACE</kbd> JUMP</span><span><kbd>P</kbd> PAUSE</span></div><span class="footer-mobile">SWIPE TO MOVE · SWIPE UP TO JUMP</span><div class="footer-right"><span>BUILT TO PLAY.</span><span class="footer-divider"></span><a href="https://github.com/timoty-a/skyline-rush" target="_blank" rel="noopener noreferrer">VIEW SOURCE ↗</a></div></footer>
+<script type="module" src="/src/main.js"></script>
+</body></html>

@@ -1,0 +1,5 @@
+{
+  "name": "skyline-rush", "version": "1.0.0", "private": true, "type": "module",
+  "scripts": {"dev": "vite --host 127.0.0.1 --port 5174", "build": "vite build", "preview": "vite preview --host 127.0.0.1 --port 5174", "test": "node --test src/*.test.js"},
+  "dependencies": {"three": "^0.180.0"}, "devDependencies": {"vite": "^7.1.0"}
+}
